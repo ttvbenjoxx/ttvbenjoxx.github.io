@@ -1,144 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CallMeGamer GameHub - Login</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <style>
-        body {
-            background: linear-gradient(to right, #1a1a1a, #333);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            color: #fff;
-        }
-        .login-container {
-            background: #2e2e2e;
-            border-radius: 8px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            color: #eee;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        /* Dark-themed Google Sign-In Button Styling */
-        .gsi-material-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            background-color: #3c4043;
-            color: #fff;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        .gsi-material-button:hover {
-            background-color: #5f6368;
-        }
-        .gsi-material-button-content-wrapper {
-            display: flex;
-            align-items: center;
-        }
-        .gsi-material-button-icon {
-            margin-right: 8px;
-        }
-        .gsi-material-button-icon svg {
-            width: 20px;
-            height: 20px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CallMeGamer GameHub</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body>
-    <div class="login-container">
-        <h1 class="text-3xl font-bold mb-4">Welcome to CallMeGamer GameHub</h1>
-        <p class="mb-6 text-gray-400">Sign in to access your gaming dashboard.</p>
-
-        <!-- Custom Google Sign-In Button -->
-        <button id="google-signin" class="gsi-material-button">
-            <div class="gsi-material-button-content-wrapper">
-                <div class="gsi-material-button-icon">
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
-                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                        <path fill="none" d="M0 0h48v48H0z"></path>
-                    </svg>
-                </div>
-                <span class="gsi-material-button-contents">Continue with Google</span>
-            </div>
-        </button>
-
-        <!-- Status Message Box -->
-        <div id="status-message" style="display: none;"></div>
-    </div>
-
-    <script type="module">
-        // Import Firebase and Authentication modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-        
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAxlEBkfszBkZt6BVezv4_oS9_paOz9NXs",
-            authDomain: "callmegamergamehub.firebaseapp.com",
-            projectId: "callmegamergamehub",
-            storageBucket: "callmegamergamehub.appspot.com",
-            messagingSenderId: "640120758569",
-            appId: "1:640120758569:web:11370e01ffacdf2c1b1738",
-            databaseURL: "https://callmegamergamehub-default-rtdb.firebaseio.com/"
-        };
-
-        // Initialize Firebase and Authentication
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-        const provider = new GoogleAuthProvider();
-
-        // Google Sign-In and Data Initialization Function
-        document.getElementById('google-signin').addEventListener('click', async () => {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-
-                if (user) {
-                    const email = user.email.replace('.', '_'); // Firebase path-friendly email
-                    const username = user.displayName || "Guest";
-
-                    // Initialize user data if new
-                    const userRef = ref(db, `users/${email}`);
-                    const snapshot = await get(userRef);
-
-                    if (!snapshot.exists()) {
-                        // Set default data for new users
-                        await set(userRef, {
-                            Username: username,
-                            Currency: 100,
-                            "Theme Preference": "light"
-                        });
-                    }
-
-                    // Redirect to dashboard on successful login
-                    setTimeout(() => {
-                        window.location.href = "dashboard";
-                    }, 1500);
-                }
-            } catch (error) {
-                console.error("Error during sign-in or data initialization:", error);
-                document.getElementById('status-message').style.display = "block";
-                document.getElementById('status-message').textContent = "Failed to sign in. Please try again.";
-            }
-        });
-    </script>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold mb-4">Welcome to CallMeGamer GameHub</h1>
+    <p class="mb-6">No login required.</p>
+    <a href="dashboard.html" class="bg-blue-600 px-6 py-3 rounded-full">Enter</a>
+  </div>
 </body>
 </html>
