@@ -1,6 +1,7 @@
 function logMessage(message) {
   const consoleBox = document.getElementById('console-box');
   if (!consoleBox) return;
+
   const messageElement = document.createElement('p');
   messageElement.textContent = message;
   consoleBox.appendChild(messageElement);
@@ -12,7 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const userEmail = document.getElementById('user-email');
   const userCurrency = document.getElementById('user-currency');
   const signOutBtn = document.getElementById('signOutBtn');
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkModeIcon = document.getElementById('darkModeIcon');
 
+  // No auth check at all
   if (userName) userName.textContent = 'Guest';
   if (userEmail) userEmail.textContent = 'No login';
   if (userCurrency) userCurrency.textContent = localStorage.getItem('currency') || '100';
@@ -24,16 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  logMessage('Auth removed. Running in guest mode.');
-});
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const isDarkMode = document.body.classList.contains('dark');
+      if (darkModeIcon) {
+        darkModeIcon.textContent = isDarkMode ? '🌙' : '☀️';
+      }
+      logMessage(`Dark mode ${isDarkMode ? 'enabled' : 'disabled'}.`);
+    });
+  }
 
-const darkModeToggle = document.getElementById('darkModeToggle');
-if (darkModeToggle) {
-  darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    const icon = document.getElementById('darkModeIcon');
-    const isDarkMode = document.body.classList.contains('dark');
-    if (icon) icon.textContent = isDarkMode ? '🌙' : '☀️';
-    logMessage(`Dark mode ${isDarkMode ? 'enabled' : 'disabled'}.`);
-  });
-}
+  logMessage('Firebase auth removed. Running in guest mode.');
+});
